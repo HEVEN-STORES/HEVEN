@@ -208,7 +208,7 @@ const PlaceOrder = () => {
           </div>
 
 
-          <p className='text-sm text-red-500 mt-5'>*Due to Some Technical Issues Use only <strong className='text-black font-bold'>Razorpay </strong>for Cashless Payment ...</p>
+          <p className='text-sm text-red-500 mt-5'>* COD Not Available only <strong className='text-black font-bold'>Razorpay </strong>for  Payments ...</p>
 
           <div className='w-full text-end mt-8 '>
 
