@@ -539,7 +539,7 @@ const PlaceOrder = () => {
           </div>
 
           <p className='text-sm text-red-500 mt-5'>
-            *<strong>trust</strong>, For UPI , Online Payment use only <strong className='text-black font-bold'>Razorpay </strong> currently.
+            <strong>*COD Not Accepted</strong>For UPI , Online Payment use only <strong className='text-black font-bold'>Razorpay </strong> currently.
           </p>
 
           {/* Place Order Button */}
