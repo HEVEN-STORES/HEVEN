@@ -231,11 +231,15 @@ const Product = () => {
 
           <p className="mt-5 text-gray-600 md:w-4/5">{productData.description}</p>
 
-          <p className="mt-5 text-gray-600 md:w-4/5">Features :{productData.features}</p>
-          <p className="mt-5 text-gray-600 md:w-4/5">Type : {productData.type}</p>
-          <p className="mt-5 text-gray-600 md:w-4/5">Fabric : {productData.quality}</p>
-
-
+         <p className="mt-5 text-gray-600 md:w-4/5">
+            <span className="text-black font-medium">Features:</span> {productData.features}
+          </p>
+          <p className="mt-5 text-gray-600 md:w-4/5">
+            <span className="text-black">Type:</span> {productData.type}
+          </p>
+          <p className="mt-5 text-gray-600 md:w-4/5">
+            <span className="text-black">Fabric:</span> {productData.quality}
+          </p>
           {/* Size Selection */}
           <div className="my-8">
             <p className="mb-2">Select Size</p>
