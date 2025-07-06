@@ -239,6 +239,8 @@ import { toast } from 'react-toastify';
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
+  const [loading, setLoading] = useState(false); // Loading spinner for Razorpay
+
   const {
     navigate,
     backendUrl,
@@ -284,13 +286,9 @@ const PlaceOrder = () => {
       });
 
       const coupon = res.data.coupon;
-      let discount = 0;
-
-      if (coupon.discount_type === 'percentage') {
-        discount = (getCartAmount() * coupon.discount_value) / 100;
-      } else {
-        discount = coupon.discount_value;
-      }
+      let discount = coupon.discount_type === 'percentage'
+        ? (getCartAmount() * coupon.discount_value) / 100
+        : coupon.discount_value;
 
       setCouponData(coupon);
       setDiscountAmount(discount);
@@ -330,15 +328,39 @@ const PlaceOrder = () => {
         } catch (error) {
           console.log(error);
           toast.error(error.message);
+        } finally {
+          setLoading(false);
+        }
+      },
+      modal: {
+        ondismiss: () => {
+          setLoading(false);
+          toast.info("Payment cancelled");
         }
       }
     };
+
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+
+    if (!token) {
+      toast.error("Please login to proceed");
+      return;
+    }
+
+    // Check if cart is empty
+    const hasItems = Object.keys(cartItems).some(
+      productId => Object.values(cartItems[productId]).some(qty => qty > 0)
+    );
+
+    if (!hasItems) {
+      toast.error("Cart is empty. Add items before placing order.");
+      return;
+    }
 
     try {
       let orderItems = [];
@@ -381,13 +403,13 @@ const PlaceOrder = () => {
           break;
 
         case 'razorpay':
-           if (!token) {
-          toast.error("Please login to proceed with payment");
-          return;
-        }
+          setLoading(true);
           const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } });
           if (responseRazorpay.data.success) {
             initPay(responseRazorpay.data.order);
+          } else {
+            toast.error("Razorpay order failed");
+            setLoading(false);
           }
           break;
 
@@ -398,15 +420,14 @@ const PlaceOrder = () => {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
-
       {/* Left Side */}
       <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
-
         <div className='text-xl sm:text-2xl my-3'>
           <Title text1={'DELIVERY'} text2={'INFORMATION'} />
         </div>
@@ -435,27 +456,26 @@ const PlaceOrder = () => {
       {/* Right Side */}
       <div className='mt-8'>
 
-        <div className='mt-8 min-w-80'>
-          <div className='border p-4 rounded shadow mt-6'>
-            <h2 className='text-lg font-semibold mb-4'>Cart Summary</h2>
-            <div className='flex justify-between mb-2'>
-              <span>Subtotal</span>
-              <span>₹{getCartAmount()}</span>
+        {/* Cart Summary */}
+        <div className='mt-8 min-w-80 border p-4 rounded shadow'>
+          <h2 className='text-lg font-semibold mb-4'>Cart Summary</h2>
+          <div className='flex justify-between mb-2'>
+            <span>Subtotal</span>
+            <span>₹{getCartAmount()}</span>
+          </div>
+          <div className='flex justify-between mb-2'>
+            <span>Delivery Fee</span>
+            <span>₹{delivery_fee}</span>
+          </div>
+          {couponData && (
+            <div className='flex justify-between mb-2 text-green-600'>
+              <span>Discount ({couponData.code})</span>
+              <span>-₹{discountAmount}</span>
             </div>
-            <div className='flex justify-between mb-2'>
-              <span>Delivery Fee</span>
-              <span>₹{delivery_fee}</span>
-            </div>
-            {couponData && (
-              <div className='flex justify-between mb-2 text-green-600'>
-                <span>Discount ({couponData.code})</span>
-                <span>-₹{discountAmount}</span>
-              </div>
-            )}
-            <div className='flex justify-between font-bold text-xl border-t pt-2'>
-              <span>Total</span>
-              <span>₹{Math.max(0, getCartAmount() + delivery_fee - discountAmount)}</span>
-            </div>
+          )}
+          <div className='flex justify-between font-bold text-xl border-t pt-2'>
+            <span>Total</span>
+            <span>₹{Math.max(0, getCartAmount() + delivery_fee - discountAmount)}</span>
           </div>
         </div>
 
@@ -506,23 +526,36 @@ const PlaceOrder = () => {
           <div className='flex gap-3 flex-col lg:flex-row'>
             <div onClick={() => setMethod('stripe')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
               <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'stripe' ? 'bg-green-400' : ''}`} />
-              <img src={assets.stripe_logo} className='h-5 mx-4' alt="" />
+              <img src={assets.stripe_logo} className='h-5 mx-4' alt="stripe" />
             </div>
             <div onClick={() => setMethod('razorpay')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
               <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'razorpay' ? 'bg-green-400' : ''}`} />
-              <img src={assets.razorpay_logo} className='h-5 mx-4' alt="" />
+              <img src={assets.razorpay_logo} className='h-5 mx-4' alt="razorpay" />
             </div>
             <div onClick={() => setMethod('cod')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
               <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'cod' ? 'bg-green-400' : ''}`} />
               <p className='text-gray-500 text-sm font-medium mx-4'>CASH ON DELIVERY</p>
             </div>
           </div>
+
           <p className='text-sm text-red-500 mt-5'>
             *To build <strong>trust</strong>, we are accepting only <strong className='text-black font-bold'>Cash On Delivery</strong> currently.
           </p>
+
+          {/* Place Order Button */}
           <div className='w-full text-end mt-8'>
-            <button type='submit' className='bg-black text-white px-16 py-3 text-sm'>
-              PLACE ORDER
+            <button
+              type='submit'
+              className='bg-black text-white px-16 py-3 text-sm flex items-center justify-center gap-2'
+              disabled={loading}
+            >
+              {loading && (
+                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              )}
+              {loading ? 'Processing...' : 'PLACE ORDER'}
             </button>
           </div>
         </div>
@@ -532,4 +565,3 @@ const PlaceOrder = () => {
 };
 
 export default PlaceOrder;
-
