@@ -405,7 +405,7 @@ const PlaceOrder = () => {
     // discount_type: "percentage", // or 'flat'
     // discount_value: 10
     discount_type: "flat",
-    discount_value: 200
+    discount_value: 100
 
   };
 
