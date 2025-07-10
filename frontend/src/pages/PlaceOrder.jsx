@@ -1,4 +1,5 @@
-// import React, { useContext, useState } from 'react';
+// import React, { useContext, useEffect, useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
 // import Title from '../components/Title';
 // import { assets } from '../assets/assets';
 // import { ShopContext } from '../context/ShopContext';
@@ -7,10 +8,11 @@
 
 // const PlaceOrder = () => {
 //   const [method, setMethod] = useState("cod");
-//   const [loading, setLoading] = useState(false); // Loading spinner for Razorpay
+//   const [loading, setLoading] = useState(false);
+//   const navigateFallback = useNavigate(); // Fallback navigation
 
 //   const {
-//     navigate,
+//     navigate: contextNavigate,
 //     backendUrl,
 //     token,
 //     cartItems,
@@ -19,6 +21,18 @@
 //     delivery_fee,
 //     products
 //   } = useContext(ShopContext);
+
+//   const goTo = contextNavigate || navigateFallback;
+
+//   useEffect(() => {
+//     if (!token) {
+//       toast.error("Please login to place an order");
+//       goTo("/login");
+//     }
+//   }, [token, goTo]);
+
+//   // If token doesn't exist, prevent render
+//   if (!token) return null;
 
 //   const [formData, setFormData] = useState({
 //     firstName: '',
@@ -38,8 +52,7 @@
 //   const [couponError, setCouponError] = useState('');
 
 //   const onChangeHandler = (event) => {
-//     const name = event.target.name;
-//     const value = event.target.value;
+//     const { name, value } = event.target;
 //     setFormData(data => ({ ...data, [name]: value }));
 //   };
 
@@ -54,7 +67,7 @@
 //       });
 
 //       const coupon = res.data.coupon;
-//       let discount = coupon.discount_type === 'percentage'
+//       const discount = coupon.discount_type === 'percentage'
 //         ? (getCartAmount() * coupon.discount_value) / 100
 //         : coupon.discount_value;
 
@@ -88,10 +101,10 @@
 //           });
 //           if (res.data.success) {
 //             setCartItems({});
-//             navigate('/orders');
+//             goTo('/orders');
 //           } else {
 //             toast.error("Payment verification failed");
-//             navigate('/cart');
+//             goTo('/cart');
 //           }
 //         } catch (error) {
 //           console.log(error);
@@ -115,12 +128,6 @@
 //   const onSubmitHandler = async (event) => {
 //     event.preventDefault();
 
-//     if (!token) {
-//       toast.error("Please login to proceed");
-//       return;
-//     }
-
-//     // Check if cart is empty
 //     const hasItems = Object.keys(cartItems).some(
 //       productId => Object.values(cartItems[productId]).some(qty => qty > 0)
 //     );
@@ -163,7 +170,7 @@
 //           const response = await axios.post(backendUrl + '/api/order/place', orderData, { headers: { token } });
 //           if (response.data.success) {
 //             setCartItems({});
-//             navigate('/orders');
+//             goTo('/orders');
 //             toast.success("Order Placed Successfully");
 //           } else {
 //             toast.error(response.data.message);
@@ -307,7 +314,7 @@
 //           </div>
 
 //           <p className='text-sm text-red-500 mt-5'>
-//             <strong>*COD Not Accepted</strong>For UPI , Online Payment use only <strong className='text-black font-bold'>Razorpay </strong> currently.
+//             *To build <strong>trust</strong>, we are accepting only <strong className='text-black font-bold'>Cash On Delivery</strong> currently.
 //           </p>
 
 //           {/* Place Order Button */}
@@ -329,12 +336,13 @@
 //         </div>
 //       </div>
 //     </form>
+
+    
+    
 //   );
 // };
 
 // export default PlaceOrder;
-
-
 
 
 
@@ -351,7 +359,7 @@ import { toast } from 'react-toastify';
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
   const [loading, setLoading] = useState(false);
-  const navigateFallback = useNavigate(); // Fallback navigation
+  const navigateFallback = useNavigate();
 
   const {
     navigate: contextNavigate,
@@ -373,7 +381,6 @@ const PlaceOrder = () => {
     }
   }, [token, goTo]);
 
-  // If token doesn't exist, prevent render
   if (!token) return null;
 
   const [formData, setFormData] = useState({
@@ -393,35 +400,35 @@ const PlaceOrder = () => {
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponError, setCouponError] = useState('');
 
+  const DEFAULT_COUPON = {
+    code: "VM07",
+    // discount_type: "percentage", // or 'flat'
+    // discount_value: 10
+    discount_type: "flat",
+    discount_value: 200
+
+  };
+
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
     setFormData(data => ({ ...data, [name]: value }));
   };
 
-  const applyCoupon = async () => {
-    try {
-      const res = await axios.get(`${backendUrl}/api/coupon/validate`, {
-        params: {
-          code: couponCode,
-          orderAmount: getCartAmount()
-        },
-        headers: { token }
-      });
+  const applyCoupon = () => {
+    const orderAmount = getCartAmount();
+    if (couponCode.trim().toUpperCase() === DEFAULT_COUPON.code) {
+      const discount = DEFAULT_COUPON.discount_type === 'percentage'
+        ? (orderAmount * DEFAULT_COUPON.discount_value) / 100
+        : DEFAULT_COUPON.discount_value;
 
-      const coupon = res.data.coupon;
-      const discount = coupon.discount_type === 'percentage'
-        ? (getCartAmount() * coupon.discount_value) / 100
-        : coupon.discount_value;
-
-      setCouponData(coupon);
+      setCouponData(DEFAULT_COUPON);
       setDiscountAmount(discount);
       setCouponError('');
       toast.success('Coupon applied successfully!');
-    } catch (err) {
-      console.log(err);
+    } else {
       setCouponData(null);
       setDiscountAmount(0);
-      const msg = err.response?.data?.error || 'Invalid or expired coupon';
+      const msg = 'Invalid or expired coupon';
       setCouponError(msg);
       toast.error(msg);
     }
@@ -543,7 +550,6 @@ const PlaceOrder = () => {
 
   return (
     <form onSubmit={onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
-      {/* Left Side */}
       <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
         <div className='text-xl sm:text-2xl my-3'>
           <Title text1={'DELIVERY'} text2={'INFORMATION'} />
@@ -570,10 +576,7 @@ const PlaceOrder = () => {
         <input required onChange={onChangeHandler} name='phone' value={formData.phone} type="number" placeholder='Contact' className='border border-gray-300 rounded py-1.5 px-3.5 w-full' />
       </div>
 
-      {/* Right Side */}
       <div className='mt-8'>
-
-        {/* Cart Summary */}
         <div className='mt-8 min-w-80 border p-4 rounded shadow'>
           <h2 className='text-lg font-semibold mb-4'>Cart Summary</h2>
           <div className='flex justify-between mb-2'>
@@ -596,7 +599,6 @@ const PlaceOrder = () => {
           </div>
         </div>
 
-        {/* Coupon Section */}
         <div className='mt-10'>
           <Title text1={'COUPON'} text2={'CODE'} />
           <div className='flex gap-2 mt-2'>
@@ -637,7 +639,6 @@ const PlaceOrder = () => {
           )}
         </div>
 
-        {/* Payment Section */}
         <div className='mt-12'>
           <Title text1={'PAYMENT'} text2={'METHOD'} />
           <div className='flex gap-3 flex-col lg:flex-row'>
@@ -659,7 +660,6 @@ const PlaceOrder = () => {
             *To build <strong>trust</strong>, we are accepting only <strong className='text-black font-bold'>Cash On Delivery</strong> currently.
           </p>
 
-          {/* Place Order Button */}
           <div className='w-full text-end mt-8'>
             <button
               type='submit'
@@ -678,12 +678,10 @@ const PlaceOrder = () => {
         </div>
       </div>
     </form>
-
-    
-    
   );
 };
 
 export default PlaceOrder;
+
 
 
