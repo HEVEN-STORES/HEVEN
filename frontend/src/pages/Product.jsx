@@ -107,7 +107,7 @@ const Product = () => {
                   key={index}
                   onClick={() => setSelectedSize(size)}
                   className={`border px-4 py-2 rounded ${
-                    selectedSize === size ? 'border-black bg-gray-200' : 'bg-gray-100'
+                    selectedSize === size ? 'border-black bg-red-500' : 'bg-gray-100'
                   }`}
                 >
                   {size}
