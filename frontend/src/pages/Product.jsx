@@ -29,7 +29,7 @@ const Product = () => {
       return;
     }
     addTOCart(productData._id, selectedSize);
-    toast.success('Product added to cart!');
+    //toast.success('Product added to cart!');
   };
 
   const handleBuyNow = () => {
