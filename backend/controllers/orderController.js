@@ -383,8 +383,10 @@ const updateStatus = async (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
+        toast.error("Failed")
         console.error("Failed to send email:", error)
       } else {
+        toast.success("Success")
         console.log("Email sent: " + info.response)
       }
     })
