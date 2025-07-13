@@ -7,8 +7,12 @@ import userRouter from './routes/userRoute.js'
 import productRouter from './routes/productRoute.js';
 import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
+import dotenv from 'dotenv'
 
 // APP CONFIG
+
+dotenv.config()
+
 
 const app = express()
 const port = process.env.PORT || 4000
@@ -34,7 +38,6 @@ app.get('/',(req,res)=>{
 })
 
 app.listen(port,()=>console.log('server sarted on PORT :'+port))
-
 
 
 
