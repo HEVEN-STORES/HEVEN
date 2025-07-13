@@ -202,6 +202,8 @@ const Orders = ({ token }) => {
                   <p>{order.address.street + ","}</p>
                   <p>{order.address.city + "-" + order.address.pincode + " , " + order.address.state + "," + order.address.country + ","}</p>
                 </div>
+                <p>{order.address.email}</p>
+
                 <p>{order.address.phone}</p>
               </div>
 
