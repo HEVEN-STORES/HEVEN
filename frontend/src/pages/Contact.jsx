@@ -21,7 +21,7 @@ const Contact = () => {
 
           <p className='font-semibold text-xl text-gray-600 '> Our Store</p>
           <p className='text-gray-500 '>Near Dhullapally <br />Kompally Road, Secunderabad , Telangana</p>
-          <p className='text-gray-500'>Tel: (+91) 8247349814 <br />Email: heven.storess@gmail.com</p>
+          <p className='text-gray-500'>Tel: (+91) 6281874010 <br />Email: heven.storess@gmail.com</p>
           <p className='font-semibold text-xl text-gray-600'>Careers at Heven</p>
           <p className='text-gray-500 '>Learn more about our Teams And job Openings</p>
 
