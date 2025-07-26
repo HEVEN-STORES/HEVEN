@@ -174,6 +174,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { ShopContext } from '../context/ShopContext';
 import RelatedProducts from '../components/RelatedProducts';
 import { assets } from '../assets/assets';
+import PreOrderInfo from '../components/PreOrderInfo';
 
 const Product = () => {
   const { productId } = useParams();
@@ -274,9 +275,15 @@ const Product = () => {
           {/* Pre-order Highlight */}
           {isPreOrder && (
             <div className="bg-yellow-100 border border-yellow-500 p-4 rounded-md mt-5 text-sm">
-              <p className="font-semibold text-yellow-800">🛒 This is a Pre-Order Product</p>
+              
               {preOrderAvailableDate && (
-                <p>Available on: <strong>{new Date(preOrderAvailableDate).toLocaleDateString()}</strong></p>
+                // <p>Available on: <strong>{new Date(preOrderAvailableDate).toLocaleDateString()}</strong></p>
+                
+                <PreOrderInfo
+              availableDate={preOrderAvailableDate}
+               />
+
+
               )}
               {maxPreOrderQty && (
                 <p>Max Pre-Order Quantity: <strong>{maxPreOrderQty}</strong></p>
@@ -355,5 +362,6 @@ const Product = () => {
 };
 
 export default Product;
+
 
 
