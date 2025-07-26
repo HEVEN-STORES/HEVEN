@@ -362,7 +362,7 @@ const Add = ({ token }) => {
          <div>
           
           <p className='mb-2'>Actual Price</p>
-          <input onChange={(e)=>setactualPrice(e.target.value)} value={actualPrice} className='w-full px-3 py-2 sm:w-[120px]' type="number" placeholder='Price in INR' />
+          <input onChange={(e)=>setActualPrice(e.target.value)} value={actualPrice} className='w-full px-3 py-2 sm:w-[120px]' type="number" placeholder='Price in INR' />
         </div>
          <div>
           <p className='mb-2'>Selling Price</p>
