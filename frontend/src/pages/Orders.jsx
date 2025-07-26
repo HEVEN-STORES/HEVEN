@@ -209,7 +209,7 @@ const Orders = () => {
         ).toDateString()
       : item.date
         ? new Date(
-            Number(item.date) + 5 * 24 * 60 * 60 * 1000
+            Number(item.date) + 3 * 24 * 60 * 60 * 1000
           ).toDateString()
         : 'N/A'
   }
