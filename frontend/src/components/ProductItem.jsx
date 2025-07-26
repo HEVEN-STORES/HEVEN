@@ -1,20 +1,28 @@
-import React, { useContext } from 'react'
-import { ShopContext } from '../context/ShopContext'
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ProductItem = ({id,image,name,price}) => {
-
-    const {currency} = useContext(ShopContext);
+const ProductItem = ({ id, name, image, price, isPreOrder }) => {
   return (
-    <Link className='text-gray-700 cursor-pointer ' to={`/product/${id}`}>
-        <div className='overflow-hidden'>
-            <img className="hover:scale-110 transition ease-in-out" src={image[0]} alt="" />
-
+    <Link to={`/product/${id}`} className="relative block group">
+      {/* Pre-Order Badge */}
+      {isPreOrder && (
+        <div className="absolute top-2 left-2 bg-black text-white text-[10px] sm:text-xs px-2 py-1 rounded uppercase z-10">
+          Pre-Order
         </div>
-        <p className='pt-3 pb-1 text-sm '>{name}</p>
-        <p className='text-sm font-medium'>{currency}{price}</p>
-    </Link>
-  )
-}
+      )}
 
-export default ProductItem
+      <img
+        src={image[0]}
+        alt={name}
+        className="w-full h-64 object-cover rounded-md group-hover:opacity-90 transition"
+      />
+      <div className="mt-2 text-sm sm:text-base">
+        <p className="font-medium truncate">{name}</p>
+        <p className="text-red-500 font-semibold">₹{price}</p>
+      </div>
+    </Link>
+  );
+};
+
+export default ProductItem;
+
