@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const ProductItem = ({ id, name, image, price, actualPrice, isPreOrder }) => {
-  // 🔻 Calculate discount percentage
-  const discountPercentage = actualPrice && price
+  const discountPercent = actualPrice
     ? Math.round(((actualPrice - price) / actualPrice) * 100)
     : 0;
 
@@ -16,6 +15,13 @@ const ProductItem = ({ id, name, image, price, actualPrice, isPreOrder }) => {
         </div>
       )}
 
+      {/* Discount badge */}
+      {discountPercent > 0 && (
+        <div className="absolute top-2 right-2 bg-red-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded z-10">
+          -{discountPercent}%
+        </div>
+      )}
+
       <img
         src={image[0]}
         alt={name}
@@ -24,14 +30,10 @@ const ProductItem = ({ id, name, image, price, actualPrice, isPreOrder }) => {
 
       <div className="mt-2 text-sm sm:text-base">
         <p className="font-medium truncate">{name}</p>
-        <p className="text-red-500 font-semibold">
-          ₹{price}
-          {discountPercentage > 0 && (
-            <span className="ml-2 text-green-600 text-xs font-medium">
-              ({discountPercentage}% OFF)
-            </span>
-          )}
-        </p>
+        <p className="text-red-500 font-semibold">₹{price}</p>
+        {actualPrice && actualPrice > price && (
+          <p className="text-xs line-through text-gray-500">₹{actualPrice}</p>
+        )}
       </div>
     </Link>
   );
