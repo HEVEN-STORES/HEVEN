@@ -165,6 +165,8 @@ useEffect(()=>{
                               image={item.image}
                               price={item.price}
                               isPreOrder={item.isPreOrder}
+                              actualPrice={item.actualPrice}
+
                             />
 
                              
