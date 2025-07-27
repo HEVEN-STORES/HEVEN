@@ -335,7 +335,7 @@ const PlaceOrder = () => {
           </div>
 
           <p className='text-sm text-red-500 mt-5'>
-            *To build <strong>trust</strong>, we are accepting only <strong className='text-black font-bold'>Cash On Delivery</strong> currently.
+            * For Online Payment <strong>trust</strong>, we are accepting only <strong className='text-black font-bold'>Razorpay</strong> currently.
           </p>
 
           <div className='w-full text-end mt-8'>
