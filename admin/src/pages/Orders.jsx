@@ -203,17 +203,37 @@ const Orders = ({ token }) => {
     </>
   )
 
+  // const renderItems = (items = []) => items.map((item, idx) => (
+  //   <p key={idx} className="py-0.5 flex items-center gap-2">
+  //     {item.name} x {item.quantity} <span>({item.size})</span>
+  //     {item.isPreOrder && (
+  //       <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-xs font-semibold">
+  //         Pre-Order
+  //       </span>
+  //     )}
+  //     {idx !== items.length - 1 && ','}
+  //   </p>
+  // ))
+
   const renderItems = (items = []) => items.map((item, idx) => (
-    <p key={idx} className="py-0.5 flex items-center gap-2">
-      {item.name} x {item.quantity} <span>({item.size})</span>
-      {item.isPreOrder && (
+  <div key={idx} className="mb-2">
+    <p className="font-bold">{item.name}</p>
+    <p className="ml-2">
+      <strong>Qty:</strong> {item.quantity}
+    </p>
+    <p className="ml-2">
+      <strong>Size:</strong> {item.size}
+    </p>
+    {item.isPreOrder && (
+      <p className="ml-2 mt-1">
         <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-xs font-semibold">
           Pre-Order
         </span>
-      )}
-      {idx !== items.length - 1 && ','}
-    </p>
-  ))
+      </p>
+    )}
+  </div>
+))
+
 
   return (
     <div>
