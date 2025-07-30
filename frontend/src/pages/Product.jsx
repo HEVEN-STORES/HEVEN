@@ -5,6 +5,8 @@ import { ShopContext } from '../context/ShopContext';
 import RelatedProducts from '../components/RelatedProducts';
 import { assets } from '../assets/assets';
 import PreOrderInfo from '../components/PreOrderInfo';
+import SizeChart from '../components/SizeChart';
+
 
 const Product = () => {
   const { productId } = useParams();
@@ -162,6 +164,8 @@ const Product = () => {
             >
               {isPreOrder ? 'Pre-Order Now' : 'Buy Now'}
             </button>
+
+             <SizeChart />
           </div>
 
           <hr className="mt-8 sm:w-4/5" />
