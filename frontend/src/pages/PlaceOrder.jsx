@@ -336,7 +336,7 @@ const PlaceOrder = () => {
 
           <p className='text-sm text-red-500 mt-5'>
             * For Online Payment <strong>trust</strong>, we are accepting only <strong className='text-black font-bold'>Razorpay</strong> currently.
-            We are Not Accepting COD
+           <strong>We are Not Accepting COD</strong> 
           </p>
 
           <div className='w-full text-end mt-8'>
