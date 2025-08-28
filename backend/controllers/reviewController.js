@@ -1,15 +1,10 @@
-
 import reviewConnection from "../config/reviewDb.js";
 import { getReviewModel } from "../models/reviewModel.js";
 import userModel from "../models/userModel.js"; // main DB
 
-// ✅ Create the Review model ONCE from the review DB connection
-const Review = getReviewModel(reviewConnection);
-
 // -------------------------
 // Create Review
 // -------------------------
-// ✅ Create Review
 export const createReview = async (req, res) => {
   try {
     const { productId, userId, rating, comment } = req.body;
@@ -17,6 +12,9 @@ export const createReview = async (req, res) => {
     if (!productId || !userId || !rating) {
       return res.status(400).json({ message: "Missing required fields" });
     }
+
+    // ✅ Ensure Review model is bound to a ready connection
+    const Review = getReviewModel(reviewConnection);
 
     // Prevent duplicate review by same user
     const existing = await Review.findOne({ productId, userId });
@@ -44,80 +42,45 @@ export const createReview = async (req, res) => {
   }
 };
 
-
 // -------------------------
-// Get Reviews
-// -------------------------
-// -------------------------
-// Get Reviews with User Data
-// -------------------------
-// ✅ Get Reviews
-// export const getReviewsByProduct = async (req, res) => {
-//   try {
-//     const { productId } = req.params;
-
-//     // Reviews from Review DB
-//     const reviews = await Review.find({ productId }).sort({ createdAt: -1 });
-
-//     // Fetch users from main DB
-//     const userIds = reviews.map(r => r.userId);
-//     const users = await userModel.find({ _id: { $in: userIds } }).select("name email");
-
-//     // Attach user info
-//     const reviewsWithUser = reviews.map(r => {
-//       const user = users.find(u => u._id.toString() === r.userId.toString());
-//       return {
-//         ...r.toObject(),
-//         user: user ? { name: user.name, email: user.email } : null,
-//       };
-//     });
-
-//     res.status(200).json(reviewsWithUser);
-//   } catch (error) {
-//     console.error("❌ Error fetching reviews:", error);
-//     res.status(500).json({ message: "Failed to fetch reviews" });
-//   }
-// };
-// -------------------------
-// Get Reviews with User Data (with debug logs)
+// Get Reviews by Product
 // -------------------------
 export const getReviewsByProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-    console.log("📌 Fetching reviews for product:", productId);
 
-    // Reviews from Review DB
-    const reviews = await Review.find({ productId }).sort({ createdAt: -1 });
-    console.log("📌 Reviews fetched from Review DB:", reviews.length);
+    console.log("🔎 Fetching reviews for product:", productId);
 
-    if (reviews.length === 0) {
-      console.log("⚠️ No reviews found for product:", productId);
+    if (!reviewConnection.readyState) {
+      console.error("❌ Review DB is NOT connected. State:", reviewConnection.readyState);
+    } else {
+      console.log("✅ Review DB connected. State:", reviewConnection.readyState);
     }
 
+    // ✅ Ensure Review model is created when connection is ready
+    const Review = getReviewModel(reviewConnection);
+
+    // Fetch reviews
+    const reviews = await Review.find({ productId }).sort({ createdAt: -1 });
+    console.log("✅ Reviews fetched:", reviews.length);
+
     // Fetch users from main DB
-    const userIds = reviews.map((r) => r.userId);
-    console.log("📌 User IDs to fetch:", userIds);
-
-    const users = await userModel
-      .find({ _id: { $in: userIds } })
-      .select("name email");
-
-    console.log("📌 Users fetched from main DB:", users.length);
+    const userIds = reviews.map(r => r.userId);
+    const users = await userModel.find({ _id: { $in: userIds } }).select("name email");
+    console.log("✅ Users fetched:", users.length);
 
     // Attach user info
-    const reviewsWithUser = reviews.map((r) => {
-      const user = users.find((u) => u._id.toString() === r.userId.toString());
+    const reviewsWithUser = reviews.map(r => {
+      const user = users.find(u => u._id.toString() === r.userId.toString());
       return {
         ...r.toObject(),
         user: user ? { name: user.name, email: user.email } : null,
       };
     });
 
-    console.log("📌 Final reviews with user info:", reviewsWithUser.length);
-
     res.status(200).json(reviewsWithUser);
   } catch (error) {
-    console.error("❌ Error fetching reviews:", error);
+    console.error("❌ Error fetching reviews:", error.message);
     res.status(500).json({ message: "Failed to fetch reviews" });
   }
 };
