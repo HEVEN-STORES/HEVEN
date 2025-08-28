@@ -52,25 +52,68 @@ export const createReview = async (req, res) => {
 // Get Reviews with User Data
 // -------------------------
 // ✅ Get Reviews
+// export const getReviewsByProduct = async (req, res) => {
+//   try {
+//     const { productId } = req.params;
+
+//     // Reviews from Review DB
+//     const reviews = await Review.find({ productId }).sort({ createdAt: -1 });
+
+//     // Fetch users from main DB
+//     const userIds = reviews.map(r => r.userId);
+//     const users = await userModel.find({ _id: { $in: userIds } }).select("name email");
+
+//     // Attach user info
+//     const reviewsWithUser = reviews.map(r => {
+//       const user = users.find(u => u._id.toString() === r.userId.toString());
+//       return {
+//         ...r.toObject(),
+//         user: user ? { name: user.name, email: user.email } : null,
+//       };
+//     });
+
+//     res.status(200).json(reviewsWithUser);
+//   } catch (error) {
+//     console.error("❌ Error fetching reviews:", error);
+//     res.status(500).json({ message: "Failed to fetch reviews" });
+//   }
+// };
+// -------------------------
+// Get Reviews with User Data (with debug logs)
+// -------------------------
 export const getReviewsByProduct = async (req, res) => {
   try {
     const { productId } = req.params;
+    console.log("📌 Fetching reviews for product:", productId);
 
     // Reviews from Review DB
     const reviews = await Review.find({ productId }).sort({ createdAt: -1 });
+    console.log("📌 Reviews fetched from Review DB:", reviews.length);
+
+    if (reviews.length === 0) {
+      console.log("⚠️ No reviews found for product:", productId);
+    }
 
     // Fetch users from main DB
-    const userIds = reviews.map(r => r.userId);
-    const users = await userModel.find({ _id: { $in: userIds } }).select("name email");
+    const userIds = reviews.map((r) => r.userId);
+    console.log("📌 User IDs to fetch:", userIds);
+
+    const users = await userModel
+      .find({ _id: { $in: userIds } })
+      .select("name email");
+
+    console.log("📌 Users fetched from main DB:", users.length);
 
     // Attach user info
-    const reviewsWithUser = reviews.map(r => {
-      const user = users.find(u => u._id.toString() === r.userId.toString());
+    const reviewsWithUser = reviews.map((r) => {
+      const user = users.find((u) => u._id.toString() === r.userId.toString());
       return {
         ...r.toObject(),
         user: user ? { name: user.name, email: user.email } : null,
       };
     });
+
+    console.log("📌 Final reviews with user info:", reviewsWithUser.length);
 
     res.status(200).json(reviewsWithUser);
   } catch (error) {
