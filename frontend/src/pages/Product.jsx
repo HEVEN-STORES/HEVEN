@@ -6,25 +6,52 @@ import RelatedProducts from '../components/RelatedProducts';
 import { assets } from '../assets/assets';
 import PreOrderInfo from '../components/PreOrderInfo';
 import SizeChart from '../components/SizeChart';
-
+import ReviewSection from '../components/ReviewSection';
+import { useSwipeable } from 'react-swipeable';
 
 const Product = () => {
   const { productId } = useParams();
   const navigate = useNavigate();
 
-  const { products, currency, addTOCart } = useContext(ShopContext);
+  const { products, currency, addTOCart , user } = useContext(ShopContext);
+  const userId = user?._id || null;
 
   const [productData, setProductData] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
   const [selectedSize, setSelectedSize] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     const currentProduct = products.find((item) => item._id === productId);
     if (currentProduct) {
       setProductData(currentProduct);
       setSelectedImage(currentProduct.image[0]);
+      setCurrentIndex(0);
     }
   }, [productId, products]);
+
+  // 🔻 Swipe handlers
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handleNextImage(),
+    onSwipedRight: () => handlePrevImage(),
+    trackMouse: true
+  });
+
+  const handleNextImage = () => {
+    if (productData) {
+      const nextIndex = (currentIndex + 1) % productData.image.length;
+      setCurrentIndex(nextIndex);
+      setSelectedImage(productData.image[nextIndex]);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (productData) {
+      const prevIndex = (currentIndex - 1 + productData.image.length) % productData.image.length;
+      setCurrentIndex(prevIndex);
+      setSelectedImage(productData.image[prevIndex]);
+    }
+  };
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -72,17 +99,37 @@ const Product = () => {
       <div className="flex flex-col sm:flex-row gap-12">
         {/* Product Images */}
         <div className="flex-1 flex flex-col sm:flex-row-reverse gap-3">
-          <div className="w-full sm:w-[80%]">
-            <img src={selectedImage} alt="Product" className="w-full h-auto" />
+          {/* Main Image with Swipe */}
+          <div {...handlers} className="w-full sm:w-[80%] relative">
+            <img src={selectedImage} alt="Product" className="w-full h-auto rounded-lg" />
+
+            {/* Navigation Arrows (only show on mobile) */}
+            <button
+              onClick={handlePrevImage}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white px-2 py-1 rounded-full sm:hidden"
+            >
+              ‹
+            </button>
+            <button
+              onClick={handleNextImage}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white px-2 py-1 rounded-full sm:hidden"
+            >
+              ›
+            </button>
           </div>
+
+          {/* Thumbnails */}
           <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-auto sm:w-[20%] w-full gap-3 sm:gap-0">
             {image.map((img, idx) => (
               <img
                 key={idx}
                 src={img}
                 alt={`Thumbnail ${idx}`}
-                onClick={() => setSelectedImage(img)}
-                className={`cursor-pointer w-[24%] sm:w-full sm:mb-3 flex-shrink-0 ${
+                onClick={() => {
+                  setSelectedImage(img);
+                  setCurrentIndex(idx);
+                }}
+                className={`cursor-pointer w-[24%] sm:w-full sm:mb-3 flex-shrink-0 rounded ${
                   selectedImage === img ? 'border-2 border-black' : ''
                 }`}
               />
@@ -165,7 +212,7 @@ const Product = () => {
               {isPreOrder ? 'Pre-Order Now' : 'Buy Now'}
             </button>
 
-             <SizeChart />
+            <SizeChart />
           </div>
 
           <hr className="mt-8 sm:w-4/5" />
@@ -176,6 +223,8 @@ const Product = () => {
           </ul>
         </div>
       </div>
+
+      <ReviewSection productId={productId} userId={user} />
 
       {/* Description Section */}
       <div className="mt-20">
