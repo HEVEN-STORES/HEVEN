@@ -271,7 +271,7 @@ const Product = () => {
   const { products, currency, addTOCart, user } = useContext(ShopContext);
 
   // ✅ safely extract userId
-  const userId = user && user._id ? user._id : null;
+  const userId = user;
 
   const [productData, setProductData] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
