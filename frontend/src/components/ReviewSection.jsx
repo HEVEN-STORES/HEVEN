@@ -62,13 +62,13 @@ const ReviewSection = ({ productId, userId }) => {
     }
   };
 
-  if (!productId || !userId) {
-    return (
-      <div className="text-gray-500 text-sm p-4">
-        Unable to load reviews. Missing product or user information.
-      </div>
-    );
-  }
+  // if (!productId || !userId) {
+  //   return (
+  //     <div className="text-gray-500 text-sm p-4">
+  //       Unable to load reviews. Missing product or user information.
+  //     </div>
+  //   );
+  // }
 
   // Show only 3 reviews unless "Show All" is active
   const visibleReviews = showAll ? reviews : reviews.slice(0, 3);
