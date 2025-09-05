@@ -224,7 +224,12 @@ const Product = () => {
         </div>
       </div>
 
-      <ReviewSection productId={productId} userId={userId} />
+{/*       <ReviewSection productId={productId} userId={userId} /> */}
+      <ReviewSection
+  productId={product?._id}   // from your product details API
+  userId={user?._id}         // from logged-in user (ShopContext or Redux)
+/>
+
 
       {/* Description Section */}
       <div className="mt-20">
