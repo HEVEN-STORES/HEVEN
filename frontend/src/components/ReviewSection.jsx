@@ -62,7 +62,7 @@ const ReviewSection = ({ productId, userId }) => {
     }
   };
 
-  if (!productId || !userId) {
+  if (!productId) {
     return (
       <div className="text-gray-500 text-sm p-4">
         Unable to load reviews. Missing product or user information.
