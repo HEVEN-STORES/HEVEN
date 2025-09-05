@@ -224,7 +224,7 @@ const Product = () => {
         </div>
       </div>
 
-      <ReviewSection productId={productId} userId={user} />
+      <ReviewSection productId={productId} userId={userId} />
 
       {/* Description Section */}
       <div className="mt-20">
