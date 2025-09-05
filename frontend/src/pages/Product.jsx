@@ -213,7 +213,7 @@ const Product = () => {
             </button>
 
             <SizeChart />
-          </div>
+          </div>  
 
           <hr className="mt-8 sm:w-4/5" />
           <ul className="text-sm text-gray-600 mt-5 space-y-1 list-disc list-inside">
