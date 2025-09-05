@@ -24,7 +24,7 @@ const Product = () => {
   useEffect(() => {
     const currentProduct = products.find((item) => item._id === productId);
     if (currentProduct) {
-      setProductData(currentProduct);
+      setProductData(currentProduct);    
       setSelectedImage(currentProduct.image[0]);
       setCurrentIndex(0);
     }
