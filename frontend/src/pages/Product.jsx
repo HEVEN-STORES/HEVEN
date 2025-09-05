@@ -14,7 +14,7 @@ const Product = () => {
   const navigate = useNavigate();
 
   const { products, currency, addTOCart , user } = useContext(ShopContext);
-  const userId = user?._id || null;
+  const userId = user?._id;
 
   const [productData, setProductData] = useState(null);
   const [selectedImage, setSelectedImage] = useState('');
@@ -224,12 +224,8 @@ const Product = () => {
         </div>
       </div>
 
-{/*       <ReviewSection productId={productId} userId={userId} /> */}
-      <ReviewSection
-  productId={product?._id}   // from your product details API
-  userId={user?._id}         // from logged-in user (ShopContext or Redux)
-/>
-
+      <ReviewSection productId={productId} userId={userId} />
+     
 
       {/* Description Section */}
       <div className="mt-20">
