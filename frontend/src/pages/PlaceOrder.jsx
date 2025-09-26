@@ -62,7 +62,7 @@ const PlaceOrder = () => {
       code: "JAY",
       discount_type: "flat",
       discount_value: 100,
-    }
+    },
     {
       code:"tribe@200",
         discount_type:"flat",
